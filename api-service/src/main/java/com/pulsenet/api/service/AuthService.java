@@ -3,15 +3,11 @@ package com.pulsenet.api.service;
 import com.pulsenet.api.model.*;
 import com.pulsenet.api.model.RequestModel.*;
 import com.pulsenet.api.repository.UserRepository;
-import com.pulsenet.api.strategy.RegularUserStrategy;
-import com.pulsenet.api.strategy.AdminUserStrategy;
 import com.pulsenet.api.factory.UserFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.pulsenet.api.strategy.IUser;
 
 // @Service marks this as a business logic/service class in Spring Boot
 @Service
@@ -19,11 +15,6 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private RegularUserStrategy regularUserStrategy;
-    @Autowired
-    private AdminUserStrategy adminUserStrategy;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
