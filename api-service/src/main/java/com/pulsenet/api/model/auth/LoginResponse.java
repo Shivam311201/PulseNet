@@ -1,4 +1,4 @@
-package com.pulsenet.api.model;
+package com.pulsenet.api.model.auth;
 
 // DTO for login response
 public class LoginResponse {

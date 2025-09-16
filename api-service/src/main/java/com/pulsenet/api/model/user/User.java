@@ -1,4 +1,4 @@
-package com.pulsenet.api.model;
+package com.pulsenet.api.model.user;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
+import javax.persistence.OneToMany;
 import java.util.List;
 
 // @Entity tells Spring Boot this class should be mapped to a database table
@@ -28,9 +28,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    // Devices registered to the user (simple string list for now)
-    @ElementCollection
-    private List<String> devices;
+    // Devices registered to the user
+    @OneToMany(mappedBy="user", cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)    
+    private List<Device> devices;
 
     // Role: REGULAR or ADMIN
     @Column(nullable = false)
@@ -42,14 +42,14 @@ public class User {
     // Constructors, getters, setters, etc.
     public User() {}
 
-    public User(String name, String email, List<String> devices, String role) {
+    public User(String name, String email, List<Device> devices, String role) {
         this.name = name;
         this.email = email;
         this.devices = devices;
         this.role = role;
     }
 
-    public User(String name, String email, String password, List<String> devices, String role) {
+    public User(String name, String email, String password, List<Device> devices, String role) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -62,8 +62,8 @@ public class User {
     public void setUsername(String name) { this.name = name; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    public List<String> getDevices() { return devices; }
-    public void setDevices(List<String> devices) { this.devices = devices; }
+    public List<Device> getDevices() { return devices; }
+    public void setDevices(List<Device> devices) { this.devices = devices; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
     public String getPassword() { return password; }

@@ -1,7 +1,7 @@
 package com.pulsenet.api.service;
 
-import com.pulsenet.api.model.*;
-import com.pulsenet.api.model.RequestModel.*;
+import com.pulsenet.api.model.user.User;
+import com.pulsenet.api.model.auth.*;
 import com.pulsenet.api.repository.UserRepository;
 import com.pulsenet.api.factory.UserFactory;
 

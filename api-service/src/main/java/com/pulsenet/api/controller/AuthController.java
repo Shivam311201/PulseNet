@@ -1,7 +1,6 @@
 package com.pulsenet.api.controller;
 
-import com.pulsenet.api.model.*;
-import com.pulsenet.api.model.RequestModel.*;
+import com.pulsenet.api.model.auth.*;
 import com.pulsenet.api.service.AuthService;
 
 import org.springframework.beans.factory.annotation.Autowired;
