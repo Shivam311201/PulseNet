@@ -1,6 +1,6 @@
 package com.pulsenet.api.factory;
 
-import com.pulsenet.api.model.User;
+import com.pulsenet.api.model.user.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
