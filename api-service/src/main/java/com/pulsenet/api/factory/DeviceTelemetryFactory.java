@@ -3,7 +3,7 @@ package com.pulsenet.api.factory;
 import com.pulsenet.api.model.device.*;
 import com.pulsenet.api.model.device.infos.*;
 import com.pulsenet.api.model.user.*;
-import com.pulsenet.api.model.user.Device;
+import com.pulsenet.api.model.device.Device;
 import com.pulsenet.api.repository.DeviceRepository;
 import org.springframework.stereotype.Component;
 import java.time.Instant;
@@ -86,9 +86,9 @@ public class DeviceTelemetryFactory
         // Device association (if device name is provided)
         if (request.getDeviceName() != null) {
             Device device = deviceRepository.findByUserAndName(user, request.getDeviceName());
-            if (device != null) {
-                telemetry.setDevice(device);
-            }
+            if (device == null) 
+                throw new IllegalArgumentException("Device with name " + request.getDeviceName() + " not found for user " + user.getUsername());
+            telemetry.setDevice(device);
         }
 
         return telemetry;

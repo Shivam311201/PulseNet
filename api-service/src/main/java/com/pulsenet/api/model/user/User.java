@@ -1,5 +1,6 @@
 package com.pulsenet.api.model.user;
 
+import com.pulsenet.api.model.device.Device;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Id;
@@ -29,7 +30,7 @@ public class User {
     private String password;
 
     // Devices registered to the user
-    @OneToMany(mappedBy="user", cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)    
+    @OneToMany(mappedBy="user", cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)  
     private List<Device> devices;
 
     // Role: REGULAR or ADMIN

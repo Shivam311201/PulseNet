@@ -1,7 +1,6 @@
 package com.pulsenet.api.controller;
 
-import com.pulsenet.api.model.device.RegisterDeviceRequest;
-import com.pulsenet.api.model.user.Device;
+import com.pulsenet.api.model.device.*;
 import com.pulsenet.api.model.user.User;
 import com.pulsenet.api.repository.DeviceRepository;
 import com.pulsenet.api.repository.UserRepository;

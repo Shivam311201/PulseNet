@@ -1,5 +1,5 @@
 package com.pulsenet.api.model.device.infos;
-import com.pulsenet.api.model.user.*;
+import com.pulsenet.api.model.device.Device;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -21,15 +21,11 @@ public class DeviceTelemetry {
     @JoinColumn(name = "device_id", nullable = false)
     private Device device;
 
-    @OneToMany(mappedBy="telemetry", cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
+    // The mappedBy attribute is only used on the parent’s side of a bidirectional relationship — it tells the JPA provider that the relationship is owned by the other side.
+    // The @ManyToOne annotation is usually on the child side, where the foreign key column exists, so it should not use mappedBy.
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "app_usage_id")
     private List<AppUsage> appUsage;
-    public Device getDevice() {
-        return device;
-    }
-
-    public void setDevice(Device device) {
-        this.device = device;
-    }
     
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "screen_id")
@@ -114,5 +110,13 @@ public class DeviceTelemetry {
     
     public void setErrors(ErrorsInfo errors) {
         this.errors = errors;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
     }
 }
