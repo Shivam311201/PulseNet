@@ -1,7 +1,5 @@
 package com.pulsenet.api.controller;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.pulsenet.api.model.device.*;
 import com.pulsenet.api.model.device.infos.*;
 import com.pulsenet.api.model.user.*;
+import com.pulsenet.api.model.dto.device.DeviceTelemetryDTO;
 import com.pulsenet.api.service.DeviceTelemetryService;
 import com.pulsenet.api.factory.DeviceTelemetryFactory;
 import com.pulsenet.api.repository.DeviceRepository;
@@ -20,7 +19,6 @@ import com.pulsenet.api.repository.UserRepository;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/device")
@@ -57,15 +55,6 @@ public class DeviceController {
             // Convert request to entity using factory
             DeviceTelemetry telemetry = deviceTelemetryFactory.createFromRequest(request, user);
             
-             try {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-                String json = mapper.writeValueAsString(telemetry);
-                System.out.println(json);
-            } catch (Exception ex) {
-                System.out.println("Error serializing telemetry: " + ex.getMessage());
-            }
-            
             // Save the telemetry
             telemetryService.saveTelemetry(telemetry);
             
@@ -100,24 +89,19 @@ public class DeviceController {
 
             // Get the latest telemetry
             DeviceTelemetry telemetry = telemetryService.getLatestTelemetryForUser(userName);
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-                String json = mapper.writeValueAsString(telemetry);
-                System.out.println(json);
-            } catch (Exception ex) {
-                System.out.println("Error serializing telemetry: " + ex.getMessage());
-            }
 
-            // if (telemetry == null) {
+            // Convert to DTO
+            DeviceTelemetryDTO telemetryDTO = DeviceTelemetryDTO.fromEntity(telemetry);
+
+            if (telemetryDTO == null) {
                 Map<String, Object> response = new HashMap<>();
-            //     response.put("status", "success");
-            //     response.put("message", "No telemetry data found for this user");
+                response.put("status", "success");
+                response.put("message", "No telemetry data found for this user");
                 return ResponseEntity.ok(response);
-            // }
+            }
             
-            // Return the telemetry data
-            // return ResponseEntity.ok(telemetry);
+            // Return the telemetry data as DTO
+            return ResponseEntity.ok(telemetryDTO);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("status", "error");

@@ -1,6 +1,9 @@
-package com.pulsenet.api.model.user;
+package com.pulsenet.api.model.device;
 
 import javax.persistence.*;
+import java.util.List;
+import com.pulsenet.api.model.device.infos.DeviceTelemetry;
+import com.pulsenet.api.model.user.User;
 
 @Entity
 @Table(
@@ -19,6 +22,9 @@ public class Device {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DeviceTelemetry> telemetry;
+
     public Device() {}
 
     public Device(String name, User user) {
@@ -34,4 +40,7 @@ public class Device {
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+
+    public List<DeviceTelemetry> getTelemetry() { return telemetry; }
+    public void setTelemetry(List<DeviceTelemetry> telemetry) { this.telemetry = telemetry; }
 }

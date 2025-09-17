@@ -15,10 +15,6 @@ public class AppUsage {
     
     @Column(nullable = false)
     private Long usageDurationMs;
-        
-    @ManyToOne
-    @JoinColumn(name = "telemetry_id")
-    private DeviceTelemetry telemetry;
     
     // Getters and setters
     public Long getId() {
@@ -43,13 +39,5 @@ public class AppUsage {
     
     public void setUsageDurationMs(Long usageDurationMs) {
         this.usageDurationMs = usageDurationMs;
-    }
-        
-    public DeviceTelemetry getTelemetry() {
-        return telemetry;
-    }
-    
-    public void setTelemetry(DeviceTelemetry telemetry) {
-        this.telemetry = telemetry;
     }
 }
