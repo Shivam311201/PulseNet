@@ -15,7 +15,7 @@ PulseNet is a cloud-native microservices platform that collects telemetry from m
 
 - Spring Boot
 - Kafka
-- PostgreSQL / MongoDB
+- MySQL
 - Docker
 - Kubernetes
 - AWS EC2 / EKS
