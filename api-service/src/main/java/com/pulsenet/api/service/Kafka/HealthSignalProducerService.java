@@ -1,4 +1,4 @@
-package com.pulsenet.api.service;
+package com.pulsenet.api.service.Kafka;
 
 import com.pulsenet.api.model.dto.health.UserHealthSignalDTO;
 import org.slf4j.Logger;

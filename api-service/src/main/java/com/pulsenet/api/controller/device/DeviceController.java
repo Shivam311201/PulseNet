@@ -1,4 +1,4 @@
-package com.pulsenet.api.controller;
+package com.pulsenet.api.controller.device;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

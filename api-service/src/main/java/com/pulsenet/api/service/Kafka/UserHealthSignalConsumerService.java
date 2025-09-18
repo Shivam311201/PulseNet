@@ -1,4 +1,4 @@
-package com.pulsenet.api.service;
+package com.pulsenet.api.service.Kafka;
 
 import com.pulsenet.api.model.dto.health.UserHealthSignalDTO;
 import com.pulsenet.api.model.user.User;
@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import com.pulsenet.api.service.UserHealthSignalService;
 
 import java.time.Instant;
 

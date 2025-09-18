@@ -1,4 +1,4 @@
-package com.pulsenet.api.controller;
+package com.pulsenet.api.controller.device;
 
 import com.pulsenet.api.model.device.*;
 import com.pulsenet.api.model.user.User;
