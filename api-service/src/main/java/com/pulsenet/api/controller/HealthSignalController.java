@@ -1,7 +1,7 @@
 package com.pulsenet.api.controller;
 
 import com.pulsenet.api.model.dto.health.UserHealthSignalDTO;
-import com.pulsenet.api.service.HealthSignalProducerService;
+import com.pulsenet.api.service.Kafka.HealthSignalProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -81,15 +81,15 @@ public class UserHealthSignalService {
     /**
      * Get health signals for a user within a specified time range
      * 
-     * @param userId The ID of the user to find health signals for
+     * @param userName The name of the user to find health signals for
      * @param startTime The start of the time range
      * @param endTime The end of the time range
      * @return List of health signals for the user within the time range
      */
-    public List<UserHealthSignal> getHealthSignalsForUserInTimeRange(Long userId, Instant startTime, Instant endTime) {
-        User user = userRepository.findById(userId).orElse(null);
+    public List<UserHealthSignal> getHealthSignalsForUserInTimeRange(String userName, Instant startTime, Instant endTime) {
+        User user = userRepository.findByName(userName);
         if (user == null) {
-            logger.warn("User not found with ID: {}", userId);
+            logger.warn("User not found with name: {}", userName);
             return Collections.emptyList();
         }
         
