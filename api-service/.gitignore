@@ -21,3 +21,5 @@ gradle-app.setting
 .classpath
 
 target
+
+.env.template

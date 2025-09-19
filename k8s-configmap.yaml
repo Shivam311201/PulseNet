@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pulsenet-api-config
+  labels:
+    app: pulsenet
+data:
+  SERVER_PORT: "8080"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "pulsenet-kafka:9092"
+  SPRING_APPLICATION_NAME: "pulsenet-api-service"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+  SPRING_JPA_SHOW_SQL: "true"
+  SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "org.hibernate.dialect.MySQL5Dialect"
+  KAFKA_TOPIC_USER_HEALTH_SIGNALS: "user-health-signals"
+  REPORT_SCHEDULER_CRON: "0 0 6 * * *"
+  REPORT_SENDER_FROM_EMAIL: "no-reply@pulsenet.com"
+  REPORT_SENDER_FROM_NAME: "PulseNet Daily Report"
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics"
+  MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: "always"

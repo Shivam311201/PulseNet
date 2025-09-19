@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulsenet-api-service
+  labels:
+    app: pulsenet
+    component: api-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pulsenet
+      component: api-service
+  template:
+    metadata:
+      labels:
+        app: pulsenet
+        component: api-service
+    spec:
+      containers:
+      - name: api-service
+        image: shivamgarg31/api-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: pulsenet-api-config
+        - secretRef:
+            name: pulsenet-api-secrets
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pulsenet-api-service
+  labels:
+    app: pulsenet
+    component: api-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
+  selector:
+    app: pulsenet
+    component: api-service
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pulsenet-api-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: pulsenet.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pulsenet-api-service
+            port:
+              number: 8080
