@@ -235,21 +235,7 @@ public class DailySummaryService {
                         .filter(t -> t.getBattery() != null && t.getBattery().getLevel() != null)
                         .mapToInt(t -> t.getBattery().getLevel())
                         .average();
-                
-                // App usage stats
-                Map<String, Long> appUsageMap = new HashMap<>();
-                deviceData.stream()
-                        .filter(t -> t.getAppUsage() != null)
-                        .flatMap(t -> t.getAppUsage().stream())
-                        .forEach(app -> {
-                            String appName = app.getAppName();
-                            Long duration = app.getUsageDurationMs();
-                            if (appName != null && duration != null) {
-                                appUsageMap.put(appName, 
-                                        appUsageMap.getOrDefault(appName, 0L) + duration);
-                            }
-                        });
-                
+                                
                 // Convert screen time to hours and minutes
                 long screenHours = totalScreenTimeMs / (1000 * 60 * 60);
                 long screenMinutes = (totalScreenTimeMs / (1000 * 60)) % 60;
@@ -259,22 +245,6 @@ public class DailySummaryService {
                 
                 emailContent.append("  Average Battery Level: ").append(avgBattery.isPresent() ? 
                         String.format("%.0f", avgBattery.getAsDouble()) : "N/A").append("%\n");
-                
-                // Top 5 most used apps
-                if (!appUsageMap.isEmpty()) {
-                    emailContent.append("  Top Apps Used:\n");
-                    
-                    appUsageMap.entrySet().stream()
-                            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                            .limit(5)
-                            .forEach(entry -> {
-                                long appHours = entry.getValue() / (1000 * 60 * 60);
-                                long appMinutes = (entry.getValue() / (1000 * 60)) % 60;
-                                emailContent.append("    - ").append(entry.getKey())
-                                        .append(": ").append(appHours).append(" hours, ")
-                                        .append(appMinutes).append(" minutes\n");
-                            });
-                }
             }
         }
         

@@ -19,6 +19,44 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pulsenet_db
+    command: --port=3308
+    ports:
+      - "3308:3308"
+
+  api-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pulsenet-api-service
+    depends_on:
+      - kafka
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+      # Database configuration
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3308/pulsenet_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      
+      # Kafka configuration
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      
+      # Email configuration
+      SPRING_MAIL_USERNAME: ${MAIL_USERNAME:-gargshivam311201@gmail.com}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD:-password}
+      
+      # Other configuration
+      SERVER_PORT: 8080
