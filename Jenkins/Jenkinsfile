@@ -1,0 +1,151 @@
+pipeline {
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: jenkins-agent
+spec:
+  containers:
+  - name: maven
+    image: maven:3.8.6-openjdk-17
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: maven-cache
+      mountPath: /root/.m2
+  - name: docker
+    image: docker:20.10.17-dind
+    command:
+    - cat
+    tty: true
+    privileged: true
+    volumeMounts:
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
+  - name: kubectl
+    image: bitnami/kubectl:1.23
+    command:
+    - cat
+    tty: true
+  volumes:
+  - name: maven-cache
+    persistentVolumeClaim:
+      claimName: maven-cache-pvc
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
+"""
+        }
+    }
+    
+    environment {
+        DOCKER_REGISTRY = 'docker.io'
+        DOCKER_REGISTRY_CREDENTIALS = 'dockerhub-credentials'
+        DOCKER_IMAGE_NAME = 'shivamgarg31/api-service'
+        ARGOCD_SERVER = 'argocd.example.com'
+        ARGOCD_CREDENTIALS = 'argocd-credentials'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Build and Test') {
+            steps {
+                container('maven') {
+                    dir('api-service') {
+                        sh 'mvn clean package'
+                    }
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                container('docker') {
+                    dir('api-service') {
+                        sh 'docker build -t ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} -t ${DOCKER_IMAGE_NAME}:latest .'
+                    }
+                }
+            }
+        }
+        
+        stage('Push to DockerHub') {
+            steps {
+                container('docker') {
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_REGISTRY_CREDENTIALS}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh 'echo $DOCKER_PASSWORD | docker login ${DOCKER_REGISTRY} -u ${DOCKER_USERNAME} --password-stdin'
+                        sh 'docker push ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}'
+                        sh 'docker push ${DOCKER_IMAGE_NAME}:latest'
+                    }
+                }
+            }
+        }
+        
+        stage('Update Kubernetes Manifests') {
+            steps {
+                container('kubectl') {
+                    dir('kubernetes') {
+                        // Update the image tag in the Kubernetes manifests
+                        sh '''
+                        sed -i "s|image: shivamgarg31/api-service:.*|image: shivamgarg31/api-service:${BUILD_NUMBER}|g" k8s-api-service.yaml
+                        '''
+                        
+                        // Commit and push changes to git
+                        withCredentials([usernamePassword(credentialsId: 'git-credentials', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                            sh '''
+                            git config --global user.email "gargshivam311201@gmail.com"
+                            git config --global user.name "Shivam311201"
+                            git add k8s-api-service.yaml
+                            git commit -m "Update API service image to version ${BUILD_NUMBER}"
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/your-org/pulsenet.git HEAD:main
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Trigger ArgoCD Sync') {
+            steps {
+                container('kubectl') {
+                    withCredentials([string(credentialsId: "${ARGOCD_CREDENTIALS}", variable: 'ARGOCD_AUTH_TOKEN')]) {
+                        sh '''
+                        # Install ArgoCD CLI
+                        curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+                        chmod +x /usr/local/bin/argocd
+                        
+                        # Login to ArgoCD
+                        argocd login ${ARGOCD_SERVER} --auth-token ${ARGOCD_AUTH_TOKEN} --insecure
+                        
+                        # Sync the application
+                        argocd app sync pulsenet-api-service
+                        
+                        # Wait for sync to complete
+                        argocd app wait pulsenet-api-service --health --timeout 300
+                        '''
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}

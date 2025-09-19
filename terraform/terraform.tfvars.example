@@ -1,0 +1,17 @@
+# Example terraform.tfvars file for PulseNet
+# Copy this file to terraform.tfvars and fill in the values
+
+aws_region              = "us-east-1"
+environment             = "dev"
+cluster_name            = "pulsenet-eks-cluster"
+eks_node_min_size       = 2
+eks_node_max_size       = 5
+eks_node_desired_size   = 3
+eks_node_instance_types = ["t3.medium"]
+db_instance_class       = "db.t3.medium"
+db_allocated_storage    = 20
+db_max_allocated_storage = 100
+db_username             = "pulsenet_admin"
+db_password             = "YourStrongPasswordHere" # Change this!
+msk_instance_type       = "kafka.t3.small"
+msk_volume_size         = 100
