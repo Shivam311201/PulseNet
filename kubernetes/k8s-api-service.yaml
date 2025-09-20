@@ -6,7 +6,7 @@ metadata:
     app: pulsenet
     component: api-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: pulsenet
